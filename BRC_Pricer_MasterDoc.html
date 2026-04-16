@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BRC Pricer — Master Document</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-chtml.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.6.1/mermaid.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&display=swap');
+
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --border: #30363d;
+    --accent: #58a6ff;
+    --accent2: #f78166;
+    --accent3: #7ee787;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --code-bg: #1c2128;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    padding: 0;
+  }
+
+  .header {
+    background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 48px 60px 40px;
+  }
+
+  .header h1 {
+    font-size: 2.4rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--text);
+  }
+
+  .header h1 span { color: var(--accent); }
+
+  .header p {
+    color: var(--muted);
+    margin-top: 8px;
+    font-size: 14px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .tag {
+    display: inline-block;
+    background: #1f2937;
+    border: 1px solid var(--border);
+    color: var(--accent);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin: 4px 4px 0 0;
+  }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 48px 60px; }
+
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px 28px;
+    margin-bottom: 48px;
+  }
+
+  .toc h3 { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 16px; }
+
+  .toc ol { padding-left: 20px; }
+  .toc li { margin: 6px 0; }
+  .toc a { color: var(--accent); text-decoration: none; font-size: 14px; }
+  .toc a:hover { text-decoration: underline; }
+
+  section { margin-bottom: 64px; }
+
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text);
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  h2 .num {
+    background: var(--accent);
+    color: #000;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin: 28px 0 12px;
+  }
+
+  h4 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--accent3);
+    margin: 20px 0 8px;
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  p { margin-bottom: 14px; color: var(--text); }
+
+  .math-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 20px 24px;
+    margin: 16px 0;
+    overflow-x: auto;
+  }
+
+  .note {
+    background: #1c2128;
+    border: 1px solid #30363d;
+    border-left: 3px solid var(--accent3);
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin: 16px 0;
+    font-size: 13.5px;
+    color: var(--muted);
+  }
+
+  .note strong { color: var(--accent3); }
+
+  .warning {
+    background: #1c1810;
+    border: 1px solid #4a3728;
+    border-left: 3px solid var(--accent2);
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin: 16px 0;
+    font-size: 13.5px;
+    color: #c9a96e;
+  }
+
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 20px 24px;
+    overflow-x: auto;
+    margin: 16px 0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  code {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    background: var(--code-bg);
+    padding: 2px 6px;
+    border-radius: 3px;
+    color: var(--accent3);
+  }
+
+  pre code {
+    background: none;
+    padding: 0;
+    color: var(--text);
+  }
+
+  .kw { color: #ff7b72; }
+  .fn { color: #d2a8ff; }
+  .st { color: #a5d6ff; }
+  .cm { color: #8b949e; font-style: italic; }
+  .nb { color: #79c0ff; }
+  .op { color: var(--accent2); }
+
+  .graph-container {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px;
+    margin: 20px 0;
+    overflow-x: auto;
+  }
+
+  .graph-container .mermaid {
+    display: flex;
+    justify-content: center;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 13.5px;
+  }
+
+  th {
+    background: var(--surface);
+    color: var(--muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid #1c2128;
+    vertical-align: top;
+  }
+
+  tr:hover td { background: #1c2128; }
+
+  .module-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px 24px;
+    margin: 12px 0;
+  }
+
+  .module-card h4 {
+    color: var(--accent);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    margin: 0 0 8px;
+  }
+
+  .module-card p { font-size: 13.5px; color: var(--muted); margin: 0; }
+
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  @media (max-width: 700px) { .grid2 { grid-template-columns: 1fr; } .container { padding: 24px 20px; } .header { padding: 32px 20px; } }
+
+  .divider { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1><span>BRC</span> Pricer — Master Document</h1>
+  <p>Barrier Reverse Convertible · Monte Carlo · Volatility Surface · Model Risk</p>
+  <div style="margin-top:16px">
+    <span class="tag">Python</span>
+    <span class="tag">Monte Carlo</span>
+    <span class="tag">Black-Scholes</span>
+    <span class="tag">Volatility Surface</span>
+    <span class="tag">BGK Correction</span>
+    <span class="tag">Streamlit</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="toc">
+    <h3>Table of Contents</h3>
+    <ol>
+      <li><a href="#s1">BRC Product Definition & Payoff</a></li>
+      <li><a href="#s2">Mathematical Foundations</a></li>
+      <li><a href="#s3">Volatility Surface</a></li>
+      <li><a href="#s4">Monte Carlo Engine</a></li>
+      <li><a href="#s5">BGK Continuity Correction</a></li>
+      <li><a href="#s6">Variance Reduction</a></li>
+      <li><a href="#s7">Project Architecture</a></li>
+      <li><a href="#s8">Function Skeletons</a></li>
+      <li><a href="#s9">Dependency Graph</a></li>
+      <li><a href="#s10">Hero Feature: Flat vs Skew Comparison</a></li>
+    </ol>
+  </div>
+
+  <!-- SECTION 1 -->
+  <section id="s1">
+    <h2><span class="num">01</span> BRC Product Definition & Payoff</h2>
+
+    <p>A <strong>Barrier Reverse Convertible (BRC)</strong> is a yield-enhancement structured product. The investor receives a fixed coupon and the full nominal at maturity — unless the underlying asset breaches a down-and-in barrier during the product life.</p>
+
+    <h3>Payoff at maturity T</h3>
+    <div class="math-block">
+      \[
+      \text{Payoff} = \begin{cases}
+        N \cdot (1 + c) & \text{if } \min_{t \in [0,T]} S_t > B \quad \text{(barrier never touched)} \\
+        N \cdot (1 + c) & \text{if barrier touched AND } S_T \geq S_0 \quad \text{(recovery)} \\
+        N \cdot \dfrac{S_T}{S_0} \cdot (1 + c) & \text{if barrier touched AND } S_T < S_0 \quad \text{(capital loss)}
+      \end{cases}
+      \]
+    </div>
+
+    <p>Where \(N\) is notional, \(c\) is the coupon rate, \(B = S_0 \cdot b\) with \(b \in (0,1)\) the barrier level (e.g. 60%), and \(S_t\) the underlying spot price.</p>
+
+    <h3>Equivalent decomposition</h3>
+    <div class="math-block">
+      \[
+      \text{BRC} = \underbrace{ZCB}_{\text{zero-coupon bond}} + \underbrace{\text{coupon}}_{\text{fixed income}} - \underbrace{\text{DIPoP}(K=S_0, B)}_{\text{down-and-in put, knocked in at barrier}}
+      \]
+    </div>
+
+    <div class="note">
+      <strong>Key intuition:</strong> The investor is short a down-and-in put. The coupon compensates for this risk. When vol is high, the DIPoP is more expensive → higher coupon offered to investors.
+    </div>
+
+    <h3>Barrier monitoring</h3>
+    <p>In practice, barriers are monitored <strong>discretely</strong> (daily closing prices), not continuously. This has significant pricing implications handled by the BGK correction (Section 5).</p>
+
+    <table>
+      <tr><th>Parameter</th><th>Symbol</th><th>Typical value</th></tr>
+      <tr><td>Notional</td><td>\(N\)</td><td>1000 CHF</td></tr>
+      <tr><td>Barrier level</td><td>\(b\)</td><td>60–70%</td></tr>
+      <tr><td>Coupon (annualised)</td><td>\(c\)</td><td>5–12%</td></tr>
+      <tr><td>Maturity</td><td>\(T\)</td><td>1–3 years</td></tr>
+      <tr><td>Underlying</td><td>\(S\)</td><td>Single stock or index</td></tr>
+    </table>
+  </section>
+
+  <!-- SECTION 2 -->
+  <section id="s2">
+    <h2><span class="num">02</span> Mathematical Foundations</h2>
+
+    <h3>Geometric Brownian Motion (GBM)</h3>
+    <p>The underlying follows risk-neutral GBM:</p>
+    <div class="math-block">
+      \[
+      dS_t = r S_t \, dt + \sigma S_t \, dW_t
+      \]
+    </div>
+    <p>Under the risk-neutral measure \(\mathbb{Q}\), \(r\) is the risk-free rate and \(W_t\) is a standard Brownian motion. The exact solution:</p>
+    <div class="math-block">
+      \[
+      S_t = S_0 \exp\!\left[\left(r - \tfrac{1}{2}\sigma^2\right)t + \sigma W_t\right]
+      \]
+    </div>
+
+    <h3>Discrete simulation</h3>
+    <p>Simulating daily steps \(\Delta t = 1/252\):</p>
+    <div class="math-block">
+      \[
+      S_{t+\Delta t} = S_t \exp\!\left[\left(r - \tfrac{1}{2}\sigma^2\right)\Delta t + \sigma \sqrt{\Delta t} \, Z\right], \quad Z \sim \mathcal{N}(0,1)
+      \]
+    </div>
+
+    <h3>Price as discounted expectation</h3>
+    <div class="math-block">
+      \[
+      V_0 = e^{-rT} \mathbb{E}^{\mathbb{Q}}\!\left[\text{Payoff}(S_0, S_1, \ldots, S_T)\right]
+      \]
+    </div>
+    <p>Monte Carlo approximates this expectation over \(N_{sim}\) paths:</p>
+    <div class="math-block">
+      \[
+      \hat{V}_0 = e^{-rT} \cdot \frac{1}{N_{sim}} \sum_{i=1}^{N_{sim}} \text{Payoff}^{(i)}
+      \]
+    </div>
+
+    <div class="note">
+      <strong>Standard error:</strong> \(\text{SE} = \frac{\hat{\sigma}_{payoff}}{\sqrt{N_{sim}}}\). To halve the error, quadruple the number of paths.
+    </div>
+  </section>
+
+  <!-- SECTION 3 -->
+  <section id="s3">
+    <h2><span class="num">03</span> Volatility Surface</h2>
+
+    <h3>Implied vs realised volatility</h3>
+    <p>Black-Scholes assumes constant \(\sigma\). In practice, implied volatility varies with strike \(K\) and maturity \(T\): this is the <strong>volatility surface</strong> \(\sigma_{imp}(K, T)\).</p>
+
+    <h3>Moneyness parametrisation</h3>
+    <p>We use log-moneyness \(m = \ln(K/F)\) where \(F = S_0 e^{rT}\) is the forward. A quadratic smile:</p>
+    <div class="math-block">
+      \[
+      \sigma_{imp}(m) = \sigma_{ATM} + \alpha \cdot m + \beta \cdot m^2
+      \]
+    </div>
+
+    <table>
+      <tr><th>Parameter</th><th>Effect</th><th>Sign for equities</th></tr>
+      <tr><td>\(\sigma_{ATM}\)</td><td>At-the-money level</td><td>positive</td></tr>
+      <tr><td>\(\alpha\) (skew)</td><td>Asymmetry — puts more expensive than calls</td><td>negative (left skew)</td></tr>
+      <tr><td>\(\beta\) (curvature)</td><td>Wings more expensive — smile shape</td><td>positive</td></tr>
+    </table>
+
+    <div class="math-block">
+      \[
+      \sigma_{barrier} = \sigma_{imp}\!\left(m = \ln\!\frac{B}{F}\right)
+    \]
+    </div>
+
+    <div class="warning">
+      <strong>Important:</strong> The barrier is typically deep OTM (60–70% of spot), in the left tail. The skew strongly increases \(\sigma\) there. Using flat vol underestimates the BRC price (DIPoP is underpriced).
+    </div>
+
+    <h3>Surface construction from market data</h3>
+    <p>Using <code>yfinance</code> option chains, we extract implied vols at available strikes and maturities, then fit the quadratic parametrisation by minimising:</p>
+    <div class="math-block">
+      \[
+      \min_{\sigma_{ATM}, \alpha, \beta} \sum_i \left(\sigma_{imp}^{market}(K_i) - \sigma_{imp}^{model}(m_i)\right)^2
+    \]
+    </div>
+  </section>
+
+  <!-- SECTION 4 -->
+  <section id="s4">
+    <h2><span class="num">04</span> Monte Carlo Engine</h2>
+
+    <h3>Algorithm overview</h3>
+    <p>For each path \(i = 1, \ldots, N_{sim}\):</p>
+    <ol style="padding-left:20px; margin: 12px 0; color: var(--text)">
+      <li style="margin:6px 0">Draw \(N_{days}\) standard normals \(Z_j \sim \mathcal{N}(0,1)\)</li>
+      <li style="margin:6px 0">Simulate path \(S_0, S_{\Delta t}, \ldots, S_T\)</li>
+      <li style="margin:6px 0">Check barrier: \(\text{knocked} = \mathbf{1}\left[\min_j S_j \leq B_{adj}\right]\) where \(B_{adj}\) is the BGK-adjusted barrier</li>
+      <li style="margin:6px 0">Compute payoff according to terminal condition</li>
+    </ol>
+    <p>Average and discount: \(\hat{V}_0 = e^{-rT} \cdot \text{mean(payoffs)}\)</p>
+
+    <h3>Confidence interval</h3>
+    <div class="math-block">
+      \[
+      \hat{V}_0 \pm 1.96 \cdot \frac{\text{std(payoffs)}}{\sqrt{N_{sim}}}
+    \]
+    </div>
+  </section>
+
+  <!-- SECTION 5 -->
+  <section id="s5">
+    <h2><span class="num">05</span> BGK Continuity Correction</h2>
+
+    <p>Broadie, Glasserman & Kou (1997) showed that a discrete barrier \(B\) is equivalent to a continuous barrier \(B'\):</p>
+
+    <div class="math-block">
+      \[
+      B_{adj} = B \cdot e^{\pm\, \beta^* \sigma \sqrt{\Delta t}}
+    \]
+    </div>
+
+    <p>where \(\beta^* = \dfrac{\zeta(1/2)}{\sqrt{2\pi}} \approx 0.5826\), \(\Delta t = 1/252\) (daily monitoring).</p>
+
+    <ul style="padding-left:20px; margin: 12px 0; color: var(--text)">
+      <li style="margin:6px 0"><strong>Down barrier:</strong> \(B_{adj} = B \cdot e^{-\beta^* \sigma \sqrt{\Delta t}}\) — adjust barrier <em>down</em></li>
+      <li style="margin:6px 0"><strong>Up barrier:</strong> \(B_{adj} = B \cdot e^{+\beta^* \sigma \sqrt{\Delta t}}\) — adjust barrier <em>up</em></li>
+    </ul>
+
+    <div class="note">
+      <strong>Intuition:</strong> Discrete monitoring misses some crossings that continuous monitoring would catch. The correction shifts the barrier so that the discrete-monitoring price matches the continuous-monitoring closed form. For BRC (down barrier), the adjusted barrier is slightly lower — meaning barrier is slightly harder to breach, increasing the product price.
+    </div>
+
+    <div class="math-block">
+      \[
+      \Delta \text{Price}_{BGK} = V_0^{discrete} - V_0^{continuous} \approx \frac{\partial V}{\partial B} \cdot B \cdot \beta^* \sigma \sqrt{\Delta t}
+    \]
+    </div>
+  </section>
+
+  <!-- SECTION 6 -->
+  <section id="s6">
+    <h2><span class="num">06</span> Variance Reduction</h2>
+
+    <h3>Antithetic variates</h3>
+    <p>For each random draw \(Z\), also simulate with \(-Z\). The payoff estimator becomes:</p>
+    <div class="math-block">
+      \[
+      \hat{V}^{AV} = \frac{1}{2}\left(V(Z) + V(-Z)\right)
+    \]
+    </div>
+    <p>This halves the number of independent random draws needed. Effective when payoff is monotone in \(Z\).</p>
+
+    <h3>Common Random Numbers (CRN)</h3>
+    <p>When comparing two prices (flat vol vs skew), use the <em>same</em> random paths for both. This reduces variance of the <em>difference</em>:</p>
+    <div class="math-block">
+      \[
+      \text{Var}\!\left[\hat{V}^{skew} - \hat{V}^{flat}\right] = \text{Var}\!\left[\hat{V}^{skew}\right] + \text{Var}\!\left[\hat{V}^{flat}\right] - 2\,\text{Cov}\!\left[\hat{V}^{skew}, \hat{V}^{flat}\right]
+    \]
+    </div>
+    <p>With CRN, the covariance term is large and positive, dramatically reducing variance of the price difference.</p>
+  </section>
+
+  <!-- SECTION 7 -->
+  <section id="s7">
+    <h2><span class="num">07</span> Project Architecture</h2>
+
+    <p>The project is structured in 5 modules:</p>
+
+    <div class="grid2">
+      <div class="module-card">
+        <h4>📁 vol_surface.py</h4>
+        <p>Fetch option chain data, compute implied vols, fit parametric smile model</p>
+      </div>
+      <div class="module-card">
+        <h4>📁 monte_carlo.py</h4>
+        <p>GBM path simulation, antithetic variates, path storage</p>
+      </div>
+      <div class="module-card">
+        <h4>📁 pricing.py</h4>
+        <p>BRC payoff computation, BGK correction, price + confidence interval</p>
+      </div>
+      <div class="module-card">
+        <h4>📁 market_data.py</h4>
+        <p>yfinance wrapper: spot, risk-free rate, dividend yield, option chain</p>
+      </div>
+      <div class="module-card">
+        <h4>📁 app.py</h4>
+        <p>Streamlit UI: inputs, vol surface plot, price comparison, sensitivity</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 8 -->
+  <section id="s8">
+    <h2><span class="num">08</span> Function Skeletons</h2>
+
+    <h3>market_data.py</h3>
+    <pre><code><span class="kw">import</span> yfinance <span class="kw">as</span> yf
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">from</span> dataclasses <span class="kw">import</span> dataclass
+
+@dataclass
+<span class="kw">class</span> <span class="fn">MarketData</span>:
+    spot: <span class="nb">float</span>
+    rate: <span class="nb">float</span>          <span class="cm"># risk-free rate (annualised)</span>
+    div_yield: <span class="nb">float</span>    <span class="cm"># continuous dividend yield</span>
+    ticker: <span class="nb">str</span>
+    option_chain: <span class="nb">dict</span>  <span class="cm"># {maturity: DataFrame}</span>
+
+
+<span class="kw">def</span> <span class="fn">fetch_market_data</span>(ticker: <span class="nb">str</span>, rate: <span class="nb">float</span> = <span class="op">0.03</span>) -> <span class="fn">MarketData</span>:
+    <span class="st">"""
+    Fetch spot price and option chain from yfinance.
+    Returns a MarketData object.
+    """</span>
+    <span class="cm"># TODO: download ticker data</span>
+    <span class="cm"># TODO: extract spot = last close price</span>
+    <span class="cm"># TODO: extract option expirations</span>
+    <span class="cm"># TODO: for each expiry, fetch calls + puts DataFrame</span>
+    <span class="cm"># TODO: compute div_yield from yf.Ticker info</span>
+    <span class="kw">pass</span>
+
+
+<span class="kw">def</span> <span class="fn">get_risk_free_rate</span>() -> <span class="nb">float</span>:
+    <span class="st">"""
+    Return risk-free rate. Simple version: hardcode or fetch 3M T-bill.
+    """</span>
+    <span class="kw">pass</span></code></pre>
+
+    <h3>vol_surface.py</h3>
+    <pre><code><span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">from</span> scipy.optimize <span class="kw">import</span> minimize, brentq
+<span class="kw">from</span> scipy.stats <span class="kw">import</span> norm
+<span class="kw">from</span> dataclasses <span class="kw">import</span> dataclass
+
+
+@dataclass
+<span class="kw">class</span> <span class="fn">SmileParams</span>:
+    sigma_atm: <span class="nb">float</span>   <span class="cm"># ATM vol level</span>
+    alpha: <span class="nb">float</span>        <span class="cm"># skew coefficient</span>
+    beta: <span class="nb">float</span>         <span class="cm"># curvature coefficient</span>
+    maturity: <span class="nb">float</span>     <span class="cm"># T in years</span>
+
+
+<span class="kw">def</span> <span class="fn">bs_call_price</span>(S: <span class="nb">float</span>, K: <span class="nb">float</span>, T: <span class="nb">float</span>,
+                  r: <span class="nb">float</span>, sigma: <span class="nb">float</span>, q: <span class="nb">float</span> = <span class="op">0.0</span>) -> <span class="nb">float</span>:
+    <span class="st">"""Black-Scholes call price. Used to invert for implied vol."""</span>
+    <span class="cm"># d1 = (ln(S/K) + (r - q + 0.5*sigma²)*T) / (sigma*sqrt(T))</span>
+    <span class="cm"># d2 = d1 - sigma*sqrt(T)</span>
+    <span class="cm"># price = S*exp(-q*T)*N(d1) - K*exp(-r*T)*N(d2)</span>
+    <span class="kw">pass</span>
+
+
+<span class="kw">def</span> <span class="fn">implied_vol</span>(market_price: <span class="nb">float</span>, S: <span class="nb">float</span>, K: <span class="nb">float</span>,
+               T: <span class="nb">float</span>, r: <span class="nb">float</span>, q: <span class="nb">float</span> = <span class="op">0.0</span>) -> <span class="nb">float</span>:
+    <span class="st">"""
+    Invert BS formula to find implied vol using Brent's method.
+    Returns NaN if no solution found.
+    """</span>
+    <span class="cm"># objective = lambda sigma: bs_call_price(...) - market_price</span>
+    <span class="cm"># use brentq on [1e-6, 5.0]</span>
+    <span class="cm"># catch ValueError if no root found → return np.nan</span>
+    <span class="kw">pass</span>
+
+
+<span class="kw">def</span> <span class="fn">fit_smile</span>(strikes: np.ndarray, impl_vols: np.ndarray,
+              forward: <span class="nb">float</span>, maturity: <span class="nb">float</span>) -> <span class="fn">SmileParams</span>:
+    <span class="st">"""
+    Fit quadratic smile: sigma(m) = atm + alpha*m + beta*m²
+    where m = log(K/F) is log-moneyness.
+    Minimise MSE between model and market implied vols.
+    """</span>
+    <span class="cm"># log_moneyness = np.log(strikes / forward)</span>
+    <span class="cm"># design_matrix = [1, m, m²]</span>
+    <span class="cm"># use scipy.optimize.minimize with L-BFGS-B</span>
+    <span class="cm"># constraint: sigma_atm > 0, beta > 0 (no-arbitrage soft)</span>
+    <span class="kw">pass</span>
+
+
+<span class="kw">def</span> <span class="fn">get_vol_for_strike</span>(K: <span class="nb">float</span>, S: <span class="nb">float</span>, T: <span class="nb">float</span>,
+                       r: <span class="nb">float</span>, params: <span class="fn">SmileParams</span>) -> <span class="nb">float</span>:
+    <span class="st">"""
+    Return implied vol for a given strike K using fitted smile params.
+    Used to get vol at barrier level.
+    """</span>
+    <span class="cm"># forward = S * exp((r) * T)</span>
+    <span class="cm"># m = log(K / forward)</span>
+    <span class="cm"># sigma = atm + alpha*m + beta*m²</span>
+    <span class="cm"># clip to [0.01, 2.0] for stability</span>
+    <span class="kw">pass</span></code></pre>
+
+    <h3>monte_carlo.py</h3>
+    <pre><code><span class="kw">import</span> numpy <span class="kw">as</span> np
+
+
+<span class="kw">def</span> <span class="fn">simulate_paths</span>(S0: <span class="nb">float</span>, r: <span class="nb">float</span>, sigma: <span class="nb">float</span>,
+                   T: <span class="nb">float</span>, n_steps: <span class="nb">int</span>, n_sims: <span class="nb">int</span>,
+                   antithetic: <span class="nb">bool</span> = <span class="kw">True</span>,
+                   seed: <span class="nb">int</span> = <span class="kw">None</span>) -> np.ndarray:
+    <span class="st">"""
+    Simulate GBM paths.
+
+    Returns:
+        paths: array of shape (n_sims, n_steps+1)
+               paths[:, 0] = S0 for all paths
+               If antithetic=True, first n_sims/2 are normal,
+               last n_sims/2 are antithetic.
+    """</span>
+    <span class="cm"># dt = T / n_steps</span>
+    <span class="cm"># drift = (r - 0.5 * sigma**2) * dt</span>
+    <span class="cm"># diffusion = sigma * sqrt(dt)</span>
+    <span class="cm"># if antithetic: draw n_sims//2 normals Z, stack with -Z</span>
+    <span class="cm"># log_returns = drift + diffusion * Z  → shape (n_sims, n_steps)</span>
+    <span class="cm"># paths = S0 * exp(cumsum of log_returns along axis=1)</span>
+    <span class="cm"># prepend S0 column</span>
+    <span class="kw">pass</span>
+
+
+<span class="kw">def</span> <span class="fn">simulate_paths_skew</span>(S0: <span class="nb">float</span>, r: <span class="nb">float</span>, T: <span class="nb">float</span>,
+                        n_steps: <span class="nb">int</span>, n_sims: <span class="nb">int</span>,
+                        smile_params, antithetic: <span class="nb">bool</span> = <span class="kw">True</span>,
+                        seed: <span class="nb">int</span> = <span class="kw">None</span>) -> np.ndarray:
+    <span class="st">"""
+    Simulate paths using local vol approximation:
+    sigma at each step determined by current moneyness.
+    Simple approach: use barrier vol as constant sigma_skew.
+    Advanced: use Dupire local vol (out of scope for v1).
+    """</span>
+    <span class="cm"># simplification for v1: use sigma = vol at barrier strike</span>
+    <span class="cm"># call simulate_paths with this constant sigma</span>
+    <span class="kw">pass</span></code></pre>
+
+    <h3>pricing.py</h3>
+    <pre><code><span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">from</span> dataclasses <span class="kw">import</span> dataclass
+
+
+<span class="nb">BGK_BETA</span> = <span class="op">0.5826</span>  <span class="cm"># = -zeta(1/2) / sqrt(2*pi)</span>
+
+
+@dataclass
+<span class="kw">class</span> <span class="fn">BRCParams</span>:
+    S0: <span class="nb">float</span>
+    barrier_pct: <span class="nb">float</span>   <span class="cm"># e.g. 0.60 for 60% barrier</span>
+    coupon: <span class="nb">float</span>        <span class="cm"># e.g. 0.08 for 8% annual coupon</span>
+    T: <span class="nb">float</span>             <span class="cm"># maturity in years</span>
+    r: <span class="nb">float</span>             <span class="cm"># risk-free rate</span>
+    notional: <span class="nb">float</span> = <span class="op">1000.0</span>
+
+
+@dataclass
+<span class="kw">class</span> <span class="fn">PriceResult</span>:
+    price: <span class="nb">float</span>
+    std_err: <span class="nb">float</span>
+    ci_low: <span class="nb">float</span>
+    ci_high: <span class="nb">float</span>
+    barrier_hit_pct: <span class="nb">float</span>  <span class="cm"># % of paths that hit the barrier</span>
+
+
+<span class="kw">def</span> <span class="fn">bgk_adjusted_barrier</span>(barrier: <span class="nb">float</span>, sigma: <span class="nb">float</span>,
+                         dt: <span class="nb">float</span>) -> <span class="nb">float</span>:
+    <span class="st">"""
+    Apply BGK continuity correction to discrete barrier.
+    For a down barrier: B_adj = B * exp(-BGK_BETA * sigma * sqrt(dt))
+    """</span>
+    <span class="cm"># return barrier * np.exp(-BGK_BETA * sigma * np.sqrt(dt))</span>
+    <span class="kw">pass</span>
+
+
+<span class="kw">def</span> <span class="fn">compute_brc_payoff</span>(paths: np.ndarray, params: <span class="fn">BRCParams</span>,
+                       sigma: <span class="nb">float</span>, use_bgk: <span class="nb">bool</span> = <span class="kw">True</span>) -> np.ndarray:
+    <span class="st">"""
+    Compute BRC payoff for each simulated path.
+
+    Args:
+        paths: (n_sims, n_steps+1) array of spot prices
+        params: BRCParams
+        sigma: vol used (flat or skew-adjusted at barrier)
+        use_bgk: apply BGK correction
+
+    Returns:
+        payoffs: (n_sims,) array
+    """</span>
+    <span class="cm"># barrier = params.S0 * params.barrier_pct</span>
+    <span class="cm"># if use_bgk: adjust barrier down with BGK</span>
+    <span class="cm"># barrier_hit = (paths.min(axis=1) <= barrier)  → boolean array</span>
+    <span class="cm"># S_T = paths[:, -1]</span>
+    <span class="cm"># coupon_payment = params.notional * params.coupon * params.T</span>
+    <span class="cm"># case 1: not hit → full notional + coupon</span>
+    <span class="cm"># case 2: hit, S_T >= S0 → full notional + coupon</span>
+    <span class="cm"># case 3: hit, S_T < S0  → notional * S_T/S0 + coupon</span>
+    <span class="kw">pass</span>
+
+
+<span class="kw">def</span> <span class="fn">price_brc</span>(paths: np.ndarray, params: <span class="fn">BRCParams</span>,
+              sigma: <span class="nb">float</span>, use_bgk: <span class="nb">bool</span> = <span class="kw">True</span>) -> <span class="fn">PriceResult</span>:
+    <span class="st">"""
+    Price BRC from simulated paths.
+    Returns PriceResult with price, SE, CI, barrier_hit_pct.
+    """</span>
+    <span class="cm"># payoffs = compute_brc_payoff(paths, params, sigma, use_bgk)</span>
+    <span class="cm"># price = exp(-r*T) * mean(payoffs)</span>
+    <span class="cm"># std_err = std(payoffs) / sqrt(n_sims)</span>
+    <span class="cm"># ci = price ± 1.96 * std_err * exp(-r*T)</span>
+    <span class="kw">pass</span>
+
+
+<span class="kw">def</span> <span class="fn">compare_flat_vs_skew</span>(paths: np.ndarray, params: <span class="fn">BRCParams</span>,
+                         sigma_flat: <span class="nb">float</span>,
+                         sigma_skew: <span class="nb">float</span>) -> <span class="nb">dict</span>:
+    <span class="st">"""
+    Hero feature: price BRC under flat vol and skew-adjusted vol.
+    Uses SAME paths (CRN) for variance reduction on the difference.
+
+    Returns dict with keys: flat, skew, difference_bps
+    """</span>
+    <span class="cm"># result_flat = price_brc(paths, params, sigma_flat)</span>
+    <span class="cm"># result_skew = price_brc(paths, params, sigma_skew)</span>
+    <span class="cm"># diff_bps = (result_skew.price - result_flat.price) / params.notional * 10000</span>
+    <span class="kw">pass</span></code></pre>
+
+    <h3>app.py (Streamlit)</h3>
+    <pre><code><span class="kw">import</span> streamlit <span class="kw">as</span> st
+<span class="kw">import</span> plotly.graph_objects <span class="kw">as</span> go
+<span class="kw">from</span> market_data <span class="kw">import</span> fetch_market_data
+<span class="kw">from</span> vol_surface <span class="kw">import</span> fit_smile, get_vol_for_strike
+<span class="kw">from</span> monte_carlo <span class="kw">import</span> simulate_paths
+<span class="kw">from</span> pricing <span class="kw">import</span> BRCParams, price_brc, compare_flat_vs_skew
+
+
+<span class="kw">def</span> <span class="fn">render_sidebar</span>() -> <span class="nb">dict</span>:
+    <span class="st">"""Render Streamlit sidebar with product parameters."""</span>
+    <span class="cm"># st.sidebar.header("BRC Parameters")</span>
+    <span class="cm"># ticker = st.sidebar.text_input("Ticker", "NESN.SW")</span>
+    <span class="cm"># barrier_pct = st.sidebar.slider("Barrier (%)", 50, 85, 65) / 100</span>
+    <span class="cm"># coupon = st.sidebar.slider("Coupon (%)", 2, 20, 8) / 100</span>
+    <span class="cm"># T = st.sidebar.selectbox("Maturity", [0.5, 1.0, 1.5, 2.0])</span>
+    <span class="cm"># n_sims = st.sidebar.select_slider("Simulations", [10000, 50000, 100000])</span>
+    <span class="kw">pass</span>
+
+
+<span class="kw">def</span> <span class="fn">plot_vol_surface</span>(strikes, impl_vols, smile_params, forward):
+    <span class="st">"""Plot market implied vols vs fitted smile curve."""</span>
+    <span class="cm"># scatter: market vols at each strike</span>
+    <span class="cm"># line: fitted smile across moneyness range</span>
+    <span class="cm"># vertical line at barrier strike</span>
+    <span class="cm"># return plotly Figure</span>
+    <span class="kw">pass</span>
+
+
+<span class="kw">def</span> <span class="fn">plot_price_comparison</span>(result_flat, result_skew):
+    <span class="st">"""Bar chart: flat vol price vs skew-adjusted price with CI."""</span>
+    <span class="kw">pass</span>
+
+
+<span class="kw">def</span> <span class="fn">main</span>():
+    st.set_page_config(page_title=<span class="st">"BRC Pricer"</span>, layout=<span class="st">"wide"</span>)
+    st.title(<span class="st">"🔵 Barrier Reverse Convertible Pricer"</span>)
+
+    params_dict = render_sidebar()
+
+    <span class="kw">if</span> st.button(<span class="st">"Run Pricer"</span>):
+        <span class="kw">with</span> st.spinner(<span class="st">"Fetching market data..."</span>):
+            mkt = fetch_market_data(params_dict[<span class="st">"ticker"</span>])
+
+        <span class="kw">with</span> st.spinner(<span class="st">"Fitting vol surface..."</span>):
+            <span class="cm"># fit smile, get sigma_flat (ATM) and sigma_skew (at barrier)</span>
+            <span class="kw">pass</span>
+
+        <span class="kw">with</span> st.spinner(<span class="st">"Running Monte Carlo..."</span>):
+            <span class="cm"># simulate paths, price flat and skew, display results</span>
+            <span class="kw">pass</span>
+
+
+<span class="kw">if</span> __name__ == <span class="st">"__main__"</span>:
+    main()</code></pre>
+  </section>
+
+  <!-- SECTION 9 -->
+  <section id="s9">
+    <h2><span class="num">09</span> Dependency Graph</h2>
+
+    <h3>Module dependencies</h3>
+    <div class="graph-container">
+      <div class="mermaid">
+graph TD
+    A[app.py<br/>Streamlit UI] --> B[market_data.py<br/>yfinance wrapper]
+    A --> C[vol_surface.py<br/>Smile fitting]
+    A --> D[monte_carlo.py<br/>GBM simulation]
+    A --> E[pricing.py<br/>BRC payoff & price]
+    C --> B
+    E --> D
+    E --> C
+
+    style A fill:#1f2937,stroke:#58a6ff,color:#e6edf3
+    style B fill:#1f2937,stroke:#7ee787,color:#e6edf3
+    style C fill:#1f2937,stroke:#7ee787,color:#e6edf3
+    style D fill:#1f2937,stroke:#7ee787,color:#e6edf3
+    style E fill:#1f2937,stroke:#f78166,color:#e6edf3
+      </div>
+    </div>
+
+    <h3>Data flow</h3>
+    <div class="graph-container">
+      <div class="mermaid">
+flowchart LR
+    A([Ticker input]) --> B[fetch_market_data]
+    B --> |spot, rate, div_yield, option chain| C[implied_vol x N strikes]
+    C --> |strikes, impl_vols| D[fit_smile]
+    D --> |SmileParams| E[get_vol_for_strike K=Barrier]
+    E --> |sigma_skew| F[simulate_paths]
+    B --> |sigma_ATM| G[simulate_paths flat]
+    F --> |paths n_sims x n_steps| H[compare_flat_vs_skew]
+    G --> |same paths CRN| H
+    H --> |PriceResult x2 + diff bps| I([Streamlit display])
+
+    style A fill:#0d1117,stroke:#58a6ff,color:#58a6ff
+    style I fill:#0d1117,stroke:#f78166,color:#f78166
+      </div>
+    </div>
+
+    <h3>Function call graph within pricing.py</h3>
+    <div class="graph-container">
+      <div class="mermaid">
+graph TD
+    A[compare_flat_vs_skew] --> B[price_brc flat]
+    A --> C[price_brc skew]
+    B --> D[compute_brc_payoff]
+    C --> D
+    D --> E[bgk_adjusted_barrier]
+    D --> F{barrier_hit check<br/>min path ≤ B_adj?}
+    F --> |No| G[payoff = N·1+c]
+    F --> |Yes, S_T ≥ S0| G
+    F --> |Yes, S_T < S0| H[payoff = N·S_T/S0·1+c]
+
+    style A fill:#1f2937,stroke:#58a6ff,color:#e6edf3
+    style E fill:#1f2937,stroke:#f78166,color:#e6edf3
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 10 -->
+  <section id="s10">
+    <h2><span class="num">10</span> Hero Feature: Flat vs Skew Comparison</h2>
+
+    <p>The central insight of this project — and what makes it directly relevant for a structuring desk:</p>
+
+    <div class="note">
+      <strong>The question:</strong> By how much (in basis points) does ignoring the volatility skew underestimate the fair value of a BRC?
+    </div>
+
+    <h3>What happens when skew is ignored</h3>
+    <p>The barrier is deep OTM (e.g. 60% of spot). On the left tail of the smile, implied vol is significantly higher than ATM vol. The DIPoP embedded in the BRC is therefore underpriced if flat vol is used:</p>
+
+    <div class="math-block">
+      \[
+      V_{BRC}^{skew} - V_{BRC}^{flat} \approx \frac{\partial V_{BRC}}{\partial \sigma}\bigg|_{\sigma=\sigma_{flat}} \cdot \left(\sigma_{skew} - \sigma_{flat}\right) > 0
+    \]
+    </div>
+
+    <p>In practice this difference can be <strong>50–200 basis points</strong> for a 1-year BRC with 60% barrier on a volatile single stock.</p>
+
+    <h3>Implementation checklist</h3>
+    <table>
+      <tr><th>Step</th><th>Function</th><th>Output</th></tr>
+      <tr><td>1. Get ATM vol</td><td><code>fit_smile → sigma_atm</code></td><td>flat vol input</td></tr>
+      <tr><td>2. Get barrier vol</td><td><code>get_vol_for_strike(K=Barrier)</code></td><td>skew vol input</td></tr>
+      <tr><td>3. Simulate once</td><td><code>simulate_paths(sigma=sigma_skew)</code></td><td>shared paths (CRN)</td></tr>
+      <tr><td>4. Price twice</td><td><code>compare_flat_vs_skew(paths, ...)</code></td><td>two PriceResult</td></tr>
+      <tr><td>5. Display diff</td><td>Streamlit metric</td><td>price diff in bps</td></tr>
+    </table>
+
+    <div class="warning">
+      <strong>Caveat for interviews:</strong> Using a single vol at barrier is a simplification. A rigorous approach uses a local vol model (Dupire). Be transparent about this — "v1 uses skew-adjusted constant vol as an approximation; local vol would be the next step."
+    </div>
+
+    <hr class="divider">
+
+    <div class="note">
+      <strong>Suggested README structure:</strong> (1) Motivation — why skew matters for BRC pricing, (2) Architecture overview, (3) Quick start, (4) Example output showing flat vs skew comparison, (5) Mathematical details link to this document.
+    </div>
+  </section>
+
+</div>
+
+<script>
+  mermaid.initialize({ 
+    startOnLoad: true, 
+    theme: 'dark',
+    themeVariables: {
+      background: '#161b22',
+      primaryColor: '#1f2937',
+      primaryTextColor: '#e6edf3',
+      primaryBorderColor: '#30363d',
+      lineColor: '#58a6ff',
+      secondaryColor: '#0d1117',
+      tertiaryColor: '#1c2128'
+    }
+  });
+</script>
+</body>
+</html>
